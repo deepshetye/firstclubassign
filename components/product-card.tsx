@@ -9,39 +9,56 @@ interface ProductCardProps {
   product: Product
 }
 
-const CARD_WIDTH = 175
 const CARD_PADDING = 6
-const IMAGE_SIZE = CARD_WIDTH - CARD_PADDING * 2
 const BADGE_HEIGHT = 22
-const BADGE_WIDTH = 85
 const CORNER_RADIUS = 12
 
 export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const { addToCart } = useCategoryStore()
+  const [cardWidth, setCardWidth] = React.useState(0)
 
   const hasDiscount = product.originalPrice > product.price
-  const productImage = {
-    uri: `https://www.shutterstock.com/image-photo/ndian-traditional-cuisine-dal-fry-600nw-2512047949.jpg`
-  }
+  const imageSize = cardWidth - CARD_PADDING * 2
+  const badgeWidth = Math.min(cardWidth * 0.5, 85) // 50% of card width or max 85
+
+  // Handle image URL with or without http prefix
+  const imageUrl = product.imageUrl?.startsWith("http")
+    ? product.imageUrl
+    : `https://${product.imageUrl}`
 
   return (
-    <View style={styles.card}>
-      <View style={styles.imageContainer}>
-        {product.tag && (
-          <View style={styles.cutoutContainer}>
-            <View style={styles.badge}>
+    <View
+      style={styles.card}
+      onLayout={event => {
+        const { width } = event.nativeEvent.layout
+        setCardWidth(width)
+      }}
+    >
+      <View style={[styles.imageContainer, { width: imageSize, height: imageSize }]}>
+        {product.tag && cardWidth > 0 && (
+          <View
+            style={[
+              styles.cutoutContainer,
+              { width: badgeWidth + CORNER_RADIUS, height: BADGE_HEIGHT + CORNER_RADIUS }
+            ]}
+          >
+            <View style={[styles.badge, { width: badgeWidth, height: BADGE_HEIGHT }]}>
               <Text style={styles.badgeText}>{product.tag}</Text>
             </View>
 
-            <View style={[styles.concaveBox, styles.concaveRight]}>
+            <View style={[styles.concaveBox, styles.concaveRight, { left: badgeWidth }]}>
               <View style={styles.concaveWindow}>
                 <Image
-                  source={productImage}
+                  source={{
+                    uri: "https://img.freepik.com/premium-photo/restaurant-style-dal-tadka-tempered-with-ghee-spices-this-recipe-makes-great-meal-with-boiled-rice_466689-76432.jpg"
+                  }}
                   style={[
                     styles.maskedImage,
                     {
+                      width: imageSize,
+                      height: imageSize,
                       top: 0,
-                      left: -BADGE_WIDTH
+                      left: -badgeWidth
                     }
                   ]}
                   contentFit="cover"
@@ -52,10 +69,14 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             <View style={[styles.concaveBox, styles.concaveBottom]}>
               <View style={styles.concaveWindow}>
                 <Image
-                  source={productImage}
+                  source={{
+                    uri: "https://img.freepik.com/premium-photo/restaurant-style-dal-tadka-tempered-with-ghee-spices-this-recipe-makes-great-meal-with-boiled-rice_466689-76432.jpg"
+                  }}
                   style={[
                     styles.maskedImage,
                     {
+                      width: imageSize,
+                      height: imageSize,
                       top: -BADGE_HEIGHT,
                       left: 0
                     }
@@ -67,7 +88,13 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           </View>
         )}
 
-        <Image source={productImage} style={styles.productImage} contentFit="cover" />
+        <Image
+          source={{
+            uri: "https://img.freepik.com/premium-photo/restaurant-style-dal-tadka-tempered-with-ghee-spices-this-recipe-makes-great-meal-with-boiled-rice_466689-76432.jpg"
+          }}
+          style={styles.productImage}
+          contentFit="cover"
+        />
       </View>
 
       <View style={styles.infoContainer}>
@@ -95,8 +122,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
 const styles = StyleSheet.create({
   card: {
-    marginHorizontal: "auto",
-    width: CARD_WIDTH,
+    flex: 1,
     backgroundColor: AppColors.white,
     borderRadius: 12,
     overflow: "hidden",
@@ -112,8 +138,6 @@ const styles = StyleSheet.create({
     elevation: 2
   },
   imageContainer: {
-    width: IMAGE_SIZE,
-    height: IMAGE_SIZE,
     borderRadius: 10,
     overflow: "hidden",
     backgroundColor: AppColors.background.light,
@@ -127,13 +151,9 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 0,
     left: 0,
-    width: BADGE_WIDTH + CORNER_RADIUS,
-    height: BADGE_HEIGHT + CORNER_RADIUS,
     zIndex: 1
   },
   badge: {
-    width: BADGE_WIDTH,
-    height: BADGE_HEIGHT,
     backgroundColor: AppColors.white,
     justifyContent: "center",
     alignItems: "center",
@@ -153,8 +173,7 @@ const styles = StyleSheet.create({
     zIndex: 1
   },
   concaveRight: {
-    top: 0,
-    left: BADGE_WIDTH
+    top: 0
   },
   concaveBottom: {
     top: BADGE_HEIGHT,
@@ -168,9 +187,7 @@ const styles = StyleSheet.create({
     backgroundColor: AppColors.white
   },
   maskedImage: {
-    position: "absolute",
-    width: IMAGE_SIZE,
-    height: IMAGE_SIZE
+    position: "absolute"
   },
   infoContainer: {
     height: 140,
