@@ -8,6 +8,36 @@ import { Platform } from 'react-native';
 const tintColorLight = '#0a7ea4';
 const tintColorDark = '#fff';
 
+export const AppColors = {
+  floralWhite: '#FCF7ED',
+  graphite: '#2D2C2B',
+  white: '#FFFFFF',
+  gunmetal: '#424140',
+  deepForest: '#054124',
+
+  // Derived colors for UI elements
+  text: {
+    primary: '#2D2C2B',
+    secondary: '#424140',
+    light: '#666666',
+    muted: '#999999',
+  },
+  background: {
+    primary: '#FFFFFF',
+    secondary: '#FCF7ED',
+    light: '#F5F5F5',
+  },
+  border: {
+    light: '#E5E5E5',
+    medium: '#F0F0F0',
+  },
+  accent: {
+    primary: '#054124',
+    light: '#E8F5E9',
+    success: '#4CAF50',
+  },
+};
+
 export const Colors = {
   light: {
     text: '#11181C',
