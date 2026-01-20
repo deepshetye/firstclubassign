@@ -1,13 +1,24 @@
 import { AppColors } from "@/constants/theme"
 import { useCategoryStore } from "@/store/category-store"
 import React, { useEffect, useRef } from "react"
-import { Animated, Dimensions, StyleSheet, Text, TouchableOpacity, View } from "react-native"
-
-const { width } = Dimensions.get("window")
+import { Animated, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 
 export const CartNotification: React.FC = () => {
-  const { showCartNotification, cartItems, totalSavings } = useCategoryStore()
+  const showCartNotification = useCategoryStore(state => state.showCartNotification)
+  const cartItems = useCategoryStore(state => state.cartItems)
+  const totalSavings = useCategoryStore(state => state.totalSavings)
+  const setShowCartNotification = useCategoryStore(state => state.setShowCartNotification)
   const slideAnim = useRef(new Animated.Value(100)).current
+
+  useEffect(() => {
+    if (showCartNotification) {
+      const timer = setTimeout(() => {
+        setShowCartNotification(false)
+      }, 10000)
+
+      return () => clearTimeout(timer)
+    }
+  }, [showCartNotification, setShowCartNotification])
 
   useEffect(() => {
     if (showCartNotification) {

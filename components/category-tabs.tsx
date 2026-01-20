@@ -9,7 +9,8 @@ interface CategoryTabsProps {
 }
 
 export const CategoryTabs: React.FC<CategoryTabsProps> = ({ categories }) => {
-  const { selectedCategory, setSelectedCategory } = useCategoryStore()
+  const selectedCategory = useCategoryStore(state => state.selectedCategory)
+  const setSelectedCategory = useCategoryStore(state => state.setSelectedCategory)
   const scrollViewRef = useRef<ScrollView>(null)
 
   useEffect(() => {

@@ -67,10 +67,6 @@ export const useCategoryStore = create<CategoryState>((set, get) => ({
       showCartNotification: true,
       totalSavings: savings
     });
-
-    setTimeout(() => {
-      set({ showCartNotification: false });
-    }, 10000);
   },
   setShowCartNotification: (visible) => set({ showCartNotification: visible }),
 }));

@@ -13,18 +13,22 @@ const CARD_PADDING = 6
 const BADGE_HEIGHT = 22
 const CORNER_RADIUS = 12
 
-export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
-  const { addToCart } = useCategoryStore()
+const ProductCardComponent: React.FC<ProductCardProps> = ({ product }) => {
+  const addToCart = useCategoryStore(state => state.addToCart)
   const [cardWidth, setCardWidth] = React.useState(0)
 
-  const hasDiscount = product.originalPrice > product.price
-  const imageSize = cardWidth - CARD_PADDING * 2
-  const badgeWidth = Math.min(cardWidth * 0.5, 85) // 50% of card width or max 85
+  const hasDiscount = React.useMemo(
+    () => product.originalPrice > product.price,
+    [product.originalPrice, product.price]
+  )
+
+  const imageSize = React.useMemo(() => cardWidth - CARD_PADDING * 2, [cardWidth])
+
+  const badgeWidth = React.useMemo(() => Math.min(cardWidth * 0.5, 85), [cardWidth])
 
   // Handle image URL with or without http prefix
-  const imageUrl = product.imageUrl?.startsWith("http")
-    ? product.imageUrl
-    : `https://${product.imageUrl}`
+  const imageUrl =
+    "https://img.freepik.com/premium-photo/restaurant-style-dal-tadka-tempered-with-ghee-spices-this-recipe-makes-great-meal-with-boiled-rice_466689-76432.jpg"
 
   return (
     <View
@@ -49,9 +53,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             <View style={[styles.concaveBox, styles.concaveRight, { left: badgeWidth }]}>
               <View style={styles.concaveWindow}>
                 <Image
-                  source={{
-                    uri: "https://img.freepik.com/premium-photo/restaurant-style-dal-tadka-tempered-with-ghee-spices-this-recipe-makes-great-meal-with-boiled-rice_466689-76432.jpg"
-                  }}
+                  source={{ uri: imageUrl }}
                   style={[
                     styles.maskedImage,
                     {
@@ -62,6 +64,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                     }
                   ]}
                   contentFit="cover"
+                  cachePolicy="memory-disk"
                 />
               </View>
             </View>
@@ -69,9 +72,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             <View style={[styles.concaveBox, styles.concaveBottom]}>
               <View style={styles.concaveWindow}>
                 <Image
-                  source={{
-                    uri: "https://img.freepik.com/premium-photo/restaurant-style-dal-tadka-tempered-with-ghee-spices-this-recipe-makes-great-meal-with-boiled-rice_466689-76432.jpg"
-                  }}
+                  source={{ uri: imageUrl }}
                   style={[
                     styles.maskedImage,
                     {
@@ -82,6 +83,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                     }
                   ]}
                   contentFit="cover"
+                  cachePolicy="memory-disk"
                 />
               </View>
             </View>
@@ -89,11 +91,12 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         )}
 
         <Image
-          source={{
-            uri: "https://img.freepik.com/premium-photo/restaurant-style-dal-tadka-tempered-with-ghee-spices-this-recipe-makes-great-meal-with-boiled-rice_466689-76432.jpg"
-          }}
+          source={{ uri: imageUrl }}
           style={styles.productImage}
           contentFit="cover"
+          cachePolicy="memory-disk"
+          priority="high"
+          transition={300}
         />
       </View>
 
@@ -119,6 +122,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     </View>
   )
 }
+
+// Memoize component to prevent unnecessary re-renders
+export const ProductCard = React.memo(ProductCardComponent)
 
 const styles = StyleSheet.create({
   card: {

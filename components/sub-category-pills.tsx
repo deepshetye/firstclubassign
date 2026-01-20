@@ -23,7 +23,8 @@ const ALL_SUBCATEGORY: SubCategory = {
 export const SubCategoryPills: React.FC<SubCategoryPillsProps> = ({
   subCategories,
 }) => {
-  const { selectedSubCategory, setSelectedSubCategory } = useCategoryStore();
+  const selectedSubCategory = useCategoryStore(state => state.selectedSubCategory);
+  const setSelectedSubCategory = useCategoryStore(state => state.setSelectedSubCategory);
 
   const allSubCategories = [ALL_SUBCATEGORY, ...subCategories];
 

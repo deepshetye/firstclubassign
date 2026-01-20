@@ -12,7 +12,9 @@ import { SubCategoryPills } from "./sub-category-pills"
 import { SuperCategoryModal } from "./super-category-modal"
 
 export const CategoryListingPage: React.FC = () => {
-  const { selectedSuperCategory, setSelectedSuperCategory, setModalVisible } = useCategoryStore()
+  const selectedSuperCategory = useCategoryStore(state => state.selectedSuperCategory)
+  const setSelectedSuperCategory = useCategoryStore(state => state.setSelectedSuperCategory)
+  const setModalVisible = useCategoryStore(state => state.setModalVisible)
   const { superCategories, getCategoriesForSuperCategory } = useSuperCategories()
   const { subCategories, products } = useListingsData()
 

@@ -19,13 +19,11 @@ const { width } = Dimensions.get("window")
 const ITEM_SIZE = (width - 60) / 3
 
 export const SuperCategoryModal: React.FC = () => {
-  const {
-    isModalVisible,
-    selectedSuperCategory,
-    setSelectedSuperCategory,
-    setModalVisible,
-    resetCategorySelection
-  } = useCategoryStore()
+  const isModalVisible = useCategoryStore(state => state.isModalVisible)
+  const selectedSuperCategory = useCategoryStore(state => state.selectedSuperCategory)
+  const setSelectedSuperCategory = useCategoryStore(state => state.setSelectedSuperCategory)
+  const setModalVisible = useCategoryStore(state => state.setModalVisible)
+  const resetCategorySelection = useCategoryStore(state => state.resetCategorySelection)
   const { superCategories } = useSuperCategories()
 
   const handleSelectSuperCategory = (category: Category) => {

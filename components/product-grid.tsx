@@ -28,6 +28,11 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ products }) => {
       contentContainerStyle={styles.gridContainer}
       showsVerticalScrollIndicator={false}
       columnWrapperStyle={styles.columnWrapper}
+      removeClippedSubviews={true}
+      maxToRenderPerBatch={10}
+      windowSize={5}
+      initialNumToRender={10}
+      updateCellsBatchingPeriod={50}
     />
   )
 }
