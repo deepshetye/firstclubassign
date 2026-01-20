@@ -1,6 +1,6 @@
 import { AppColors } from "@/constants/theme"
-import type { Product } from "@/types/category"
 import { useCategoryStore } from "@/store/category-store"
+import type { Product } from "@/types/category"
 import { Image } from "expo-image"
 import React from "react"
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native"
@@ -9,35 +9,65 @@ interface ProductCardProps {
   product: Product
 }
 
+const CARD_WIDTH = 175
+const CARD_PADDING = 6
+const IMAGE_SIZE = CARD_WIDTH - CARD_PADDING * 2
+const BADGE_HEIGHT = 22
+const BADGE_WIDTH = 85
+const CORNER_RADIUS = 12
+
 export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const { addToCart } = useCategoryStore()
+
   const hasDiscount = product.originalPrice > product.price
-  const discountPercentage = hasDiscount
-    ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
-    : 0
+  const productImage = {
+    uri: `https://www.shutterstock.com/image-photo/ndian-traditional-cuisine-dal-fry-600nw-2512047949.jpg`
+  }
 
   return (
     <View style={styles.card}>
       <View style={styles.imageContainer}>
         {product.tag && (
-          <View style={styles.tagContainer}>
-            <Text style={styles.tagText}>{product.tag}</Text>
+          <View style={styles.cutoutContainer}>
+            <View style={styles.badge}>
+              <Text style={styles.badgeText}>{product.tag}</Text>
+            </View>
+
+            <View style={[styles.concaveBox, styles.concaveRight]}>
+              <View style={styles.concaveWindow}>
+                <Image
+                  source={productImage}
+                  style={[
+                    styles.maskedImage,
+                    {
+                      top: 0,
+                      left: -BADGE_WIDTH
+                    }
+                  ]}
+                  contentFit="cover"
+                />
+              </View>
+            </View>
+
+            <View style={[styles.concaveBox, styles.concaveBottom]}>
+              <View style={styles.concaveWindow}>
+                <Image
+                  source={productImage}
+                  style={[
+                    styles.maskedImage,
+                    {
+                      top: -BADGE_HEIGHT,
+                      left: 0
+                    }
+                  ]}
+                  contentFit="cover"
+                />
+              </View>
+            </View>
           </View>
         )}
-        {hasDiscount && (
-          <View style={styles.discountBadge}>
-            <Text style={styles.discountText}>{discountPercentage}× Bigger</Text>
-          </View>
-        )}
-        <Image
-          source={{
-            uri: product.imageUrl.startsWith("http")
-              ? product.imageUrl
-              : `https://${product.imageUrl}`
-          }}
-          style={styles.productImage}
-          contentFit="cover"
-        />
+
+        <Image source={productImage} style={styles.productImage} contentFit="cover" />
       </View>
 
       <View style={styles.infoContainer}>
@@ -65,22 +95,27 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
 const styles = StyleSheet.create({
   card: {
+    marginHorizontal: "auto",
+    width: CARD_WIDTH,
     backgroundColor: AppColors.white,
     borderRadius: 12,
     overflow: "hidden",
-    marginBottom: 12,
+    marginBottom: 14,
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
       height: 1
     },
+    padding: CARD_PADDING,
     shadowOpacity: 0.1,
     shadowRadius: 3,
     elevation: 2
   },
   imageContainer: {
-    width: "100%",
-    aspectRatio: 1,
+    width: IMAGE_SIZE,
+    height: IMAGE_SIZE,
+    borderRadius: 10,
+    overflow: "hidden",
     backgroundColor: AppColors.background.light,
     position: "relative"
   },
@@ -88,44 +123,58 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%"
   },
-  tagContainer: {
+  cutoutContainer: {
     position: "absolute",
-    top: 8,
-    left: 8,
-    backgroundColor: AppColors.accent.success,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderTopLeftRadius: 8,
-    borderTopRightRadius: 8,
-    borderBottomLeftRadius: 12,
-    borderBottomRightRadius: 12,
+    top: 0,
+    left: 0,
+    width: BADGE_WIDTH + CORNER_RADIUS,
+    height: BADGE_HEIGHT + CORNER_RADIUS,
     zIndex: 1
   },
-  tagText: {
-    color: AppColors.white,
-    fontSize: 10,
-    fontWeight: "600"
+  badge: {
+    width: BADGE_WIDTH,
+    height: BADGE_HEIGHT,
+    backgroundColor: AppColors.white,
+    justifyContent: "center",
+    alignItems: "center",
+    borderBottomRightRadius: CORNER_RADIUS,
+    zIndex: 2
   },
-  discountBadge: {
+  badgeText: {
+    color: "#4CAF50",
+    fontWeight: "700",
+    fontSize: 10
+  },
+  concaveBox: {
     position: "absolute",
-    top: 8,
-    left: 8,
-    backgroundColor: AppColors.accent.light,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderTopLeftRadius: 8,
-    borderTopRightRadius: 8,
-    borderBottomLeftRadius: 12,
-    borderBottomRightRadius: 12,
+    width: CORNER_RADIUS,
+    height: CORNER_RADIUS,
+    backgroundColor: AppColors.white,
     zIndex: 1
   },
-  discountText: {
-    color: AppColors.deepForest,
-    fontSize: 11,
-    fontWeight: "600"
+  concaveRight: {
+    top: 0,
+    left: BADGE_WIDTH
+  },
+  concaveBottom: {
+    top: BADGE_HEIGHT,
+    left: 0
+  },
+  concaveWindow: {
+    width: CORNER_RADIUS,
+    height: CORNER_RADIUS,
+    borderTopLeftRadius: CORNER_RADIUS,
+    overflow: "hidden",
+    backgroundColor: AppColors.white
+  },
+  maskedImage: {
+    position: "absolute",
+    width: IMAGE_SIZE,
+    height: IMAGE_SIZE
   },
   infoContainer: {
-    padding: 12
+    height: 140,
+    padding: 6
   },
   weight: {
     fontSize: 10,
@@ -143,18 +192,15 @@ const styles = StyleSheet.create({
   description: {
     fontSize: 12,
     color: AppColors.text.muted,
-    marginBottom: 8
+    marginBottom: 8,
+    flex: 1
   },
   priceContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center"
   },
-  priceRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6
-  },
+  priceRow: {},
   price: {
     fontSize: 16,
     fontWeight: "700",
@@ -176,7 +222,6 @@ const styles = StyleSheet.create({
   },
   addButtonText: {
     fontSize: 20,
-    // fontWeight: "600",
     color: AppColors.deepForest
   }
 })
